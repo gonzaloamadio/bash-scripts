@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Nagios check script for esx to check existence of snapshot and where are
+# last modified by Mirko Minuti - mirko (dot) minuti (at) keytech (dot) it - 2013/DEC/18
+#
+# The script should work with any version of vmware esx/esxi (tested on esx 3.5/4.0/4.1)
+# on early version you have to create an alias for vim-cmd
+# #cd /usr/bin
+# #ln -s ./vmware-vim-cmd vim-cmd
+#
+# on your nagios server execute:
+#
+# #sudo nagios
+# #ssh-keygen
+# #ssh-copy-id -i .ssh/id_rsa.pub root@youresxhost
+#
+# for each of your esx hosts
+#
+
+print_usage() {
+        echo ""
+        echo "Usage: $0 [esxi_hostname] [warn] [crit]"
+        echo "where [warn] and [crit] are values of number of allowed snapshots"
+        echo ""
+        exit 3
+}
+
+case "$1" in
+        --help)
+                print_usage
+                ;;
+        -h)
+                print_usage
+                ;;
+esac
+
+if [ "$#" -ne "3" ]; then
+        print_usage
+fi
+
+i=0
+total=0
+
+vms=(`ssh root@$1 vim-cmd vmsvc/getallvms | sed -e '1d' -e 's/ \[.*$//' | awk '$1 ~ /^[0-9]+$/ {print  $1":"substr($0,8,80)}'|sort`);
+for vm in "${vms[@]}"; do
+    id=`echo $vm |awk -F: '{print $1}'`
+    vmname=`echo $vm |awk -F: '{print $2}'`
+    result=`ssh root@$1 vim-cmd vmsvc/snapshot.get $id |grep "Snapshot Name" |wc -l`
+    if [ $result -ge 1 ]; then
+        snap[$i]="$vmname:$result";
+        let "total=$total+$result";
+        let i++;
+    fi
+done
+
+if [ $total -le $2 ] ; then
+        if [ $total -eq 0 ] ; then
+                echo "OK - $total snapshots found"
+                exit 0
+        else
+                echo "OK - $total snapshots found on ${snap[@]}"
+                exit 0
+        fi
+fi
+
+if [ $total -le $3 ] ; then
+        echo "WARNING - $total snapshots found on ${snap[@]}"
+        exit 1
+else
+        echo "CRITICAL - $total snapshots found on ${snap[@]}"
+        exit 2
+fi

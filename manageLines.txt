@@ -1,0 +1,101 @@
+
+-------------------------------------------------------------------
+DELETE DUPLCATED LINES
+cat -n errores | sort -u -k2,7 | sort -n |sed 's/.*\t/    /;s/\([0-9]\{4\}\).*/\1/' > erroresS
+awk '{line=substr($0,1,match($0,/[0-9][0-9][0-9][0-9]/)+3);sub(/^/,"    ",line);if(!dup[line]++)print line}' errores > erroresS
+awk '!x[$0]++' errores > erroresS
+sort file | uniq > file.new
+awk '!a[$0]++' errores  | uniq > erroresS
+
+-------------------------------------------------------------------
+CONTAR LINEAS
+wc -l errores
+
+-------------------------------------------------------------------
+CORTAR N PRIMEROS CARACTERES
+sed 's/^...........//' erroresT > erroresS
+
+SACAR HORA (SEGUND PALABRA)
+ref: http://stackoverflow.com/questions/13741558/how-can-i-delete-the-second-word-of-every-line-of-top1-output
+cut -d' ' -f2 --complement erroresT > erroresS
+
+-------------------------------------------------------------------
+ELIMINAR LINEAS DUPLICADAS
+# uniq solo lineas adyacentes
+uniq erroresSum > erroresSum2
+you can filter out duplicate lines with uniq:
+sort file.txt | uniq
+Or you can print only repeating lines with
+sort file.txt | uniq -d
+
+-------------------------------------------------------------------
+DIVIDIR STRING
+string1: sintrg2: string3
+queremos dividirlo en string1 y string2:string3
+supongo que tenemos todas las lineas adentro del archivo zzz.txt
+$cat zzz.txt | cut -d : -f1   (aca me quedo con string1 y en el otro con el resto)
+$cat zzz.txt | cut -d : -f2-
+
+-------------------------------------------------------------------
+ELIMINAMOS LINEA QUE CONTIENE el string FALSE
+http://en.kioskea.net/faq/1451-sed-delete-one-or-more-lines-from-a-file
+sed --in-place '/FALSE/d' nameAndMails2.txt 
+
+LO MISMO PERO DE MUCHOS ARCHIVOS (el=.bak hace un bk del archivo antes de modificarlo)
+for f in *.txt; do sed --in-place '/some string/d'
+"$f"; done
+find -name '*.txt' -exec sed --in-place=.bak '/some
+string/d' "{}" ';'
+
+-------------------------------------------------------------------
+VER SI LINEA CONTIENE UN STRING
+input=nameAndMails2.txt
+while read line;
+do
+   if [[ $line == *"displayName"* ]]
+   then
+     echo "It's there!";
+   fi
+done < "$input"
+
+-------------------------------------------------------------------
+BORRAR ESPACIOS?
+tr -d '\040\011\012\015'
+echo "dasad da ad ada" | tr -d '\b\n\r\t\v[:blank:]'
+
+#lineas con la forma:  o1_mf_1_6270_bqfwnfkl_.arc y me quedo con el numero del medio
+VAR=`ls -LR /o2/flash_recovery_area/UAACLDB/archivelog/ | sort -h | grep "_.arc" | tail -1 | head -c 12 | tail -c 4`
+echo "o1_mf_1_6270_bqfwnfkl_.arc" | cut -d _ -f4
+
+-------------------------------------------------------------------
+DELETE FIRST AND LAST
+#\( \)  esto define un patron.
+#\1 matchea con el primer patron q encuentre. Si tuviesemos mas patrones, \2 . . 
+#Entonces encontramos la cadena   ^.patron.$, que seria: primer caracter, patron con .* (cualquier cosa) , ultimo caracter
+#Y lo reemplaza con \1, que es en este caso todo lo que esta en el patron, es decir, lo que esta entre el 1er y ultimo caracter.
+echo "[1234]" | sed 's:^.\(.*\).$:\1:'
+1234
+
+DELETE LAST
+echo "[1234]" | sed 's:\(.*\).$:\1:'
+[1234
+
+-------------------------------------------------------------------
+DELETE EMPTY LINES
+
+sed '/^$/d' input.txt > output.txt
+sed -i '/^$/d' input.txt
+
+grep -v '^$' input.txt > output.txt
+
+#!/bin/bash
+files="/home/me/data/*.txt"
+for i in $files
+do
+  sed '/^$/d' $i > $i.out
+  mv  $i.out $i
+done
+
+----------------------------------------
+FILTRAR LINEAS  Q ESTAN EN OTRO ARCHIVO
+http://stackoverflow.com/questions/18204904/fast-way-of-finding-lines-in-one-file-that-are-not-in-another
