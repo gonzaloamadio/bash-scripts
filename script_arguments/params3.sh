@@ -1,13 +1,13 @@
 #!/bin/bash
 
   if [[ "$1" =~ ^((-{1,2})([Hh]$|[Hh][Ee][Ll][Pp])|)$ ]]; then
+    echo "HERE"
     exit 1
   else
     while [[ $# -gt 0 ]]; do
       opt="$1"
       shift;
-      current_arg="$1"
-      if [[ "$current_arg" =~ ^-{1,2}.* ]]; then
+      if [[ "$opt" =~ ^-{1,2}.* ]]; then
         echo "WARNING: You may have left an argument blank. Double check your command." 
       fi
       case "$opt" in
@@ -31,3 +31,24 @@
   echo $APPLE
   echo
   echo $BANANA
+
+
+  ####### OTHER
+
+exit
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -f | --file )           shift
+                                filename=$1
+                                ;;
+        -i | --interactive )    interactive=1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done

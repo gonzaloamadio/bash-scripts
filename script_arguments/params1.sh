@@ -28,5 +28,3 @@ while getopts ":a:" opt; do
   esac
 done
 
-#Si no lo llamamos con ninguna bandera deberiamos entrar aca
-echo $1

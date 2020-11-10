@@ -16,7 +16,7 @@
 # more details.
 
 # Usage: add_config_per_user_to_ocserc_for_user.sh [-h|--help]
-#        add_config_per_user_to_ocserc_for_user.sh [-p|--ipv4network] [-r|--routes] [-i|--iroutes]
+#        add_config_per_user_to_ocserc_for_user.sh [-p|--ipv4network] [-r|--routes] [-i|--iroutes] [-u|--username]
 
 # Revision history:
 # 2020-11-09 Created
@@ -29,7 +29,8 @@ VERSION="0.1"
 error_exit() {
 
   local error_message="$1"
-  printf "%s: %s\n" "${PROGNAME}" "${error_message:-"Unknown Error"}" >&2
+  printf "%s: %s\n" "ERROR: ${PROGNAME}" "${error_message:-"Unknown Error"}" >&2
+  echo
   exit 1
 }
 
@@ -51,8 +52,13 @@ signal_exit() { # Handle trapped signals
 
 
 usage() {
+  echo
   printf "%s\n" "Usage: ${PROGNAME} [-h|--help]"
-  printf "%s\n" "       ${PROGNAME} [-p|--ipv4network] [-r|--routes] [-i|--iroutes]"
+  printf "%s\n" "       ${PROGNAME} [-p|--ipv4network] [-r|--routes] [-i|--iroutes] [-u|--username]"
+  echo
+  printf "Example Usage:"
+  printf "%s\n" '    bash add_config_per_user_to_ocserc_for_user.sh -r 1.1.1.0/24,2.2.0.0/16 -p 192.160.0.0/24 -u myuser -i "3.3.3.0/24, 4.4.4.0/24" '
+  echo
 }
 
 help_message() {
@@ -67,6 +73,7 @@ $(usage)
   -p, --ipv4network           Pool of IPs that server deliver. For example: 172.31.239.0/30
   -r, --routes                Routes injected to user. Ej: 172.31.94.55/32,172.31.89.78/32
   -i, --iroutes               Routes routed through this vpn server. Ej: 192.168.0.0/16,10.0.0.0/8
+  -u, --username              Username used to connect to the server
 
   NOTE: You must be the superuser to run this script.
 
@@ -99,13 +106,20 @@ while [[ -n "$1" ]]; do
       graceful_exit
       ;;
     -p | --ipv4network)
+      shift
       POOL=$1
       ;;
     -r | --routes)
+      shift
       ROUTES=$1
       ;;
     -i | --iroutes)
+      shift
       IROUTES=$1
+      ;;
+    -u | --username)
+      shift
+      USERNAME=$1
       ;;
     -* | --*)
       usage >&2
@@ -115,11 +129,29 @@ while [[ -n "$1" ]]; do
   shift
 done
 
-# Main logic
-# Use comma as separator and apply as pattern
-for val in ${stringList//,/ }
+
+# Check if all required arguments are passed
+if [ -z "${POOL}" ] || [ -z "${ROUTES}" ] || [ -z "${USERNAME}"  ]; then
+    usage
+    exit $FAILURE
+fi
+
+# TODO: check chown
+# FOLDER="/etc/ocserv/config-per-user"
+FOLDER="/tmp"
+mkdir -p $FOLDER
+CONFIG_FILE="${FOLDER}/${USERNAME}"
+touch $CONFIG_FILE
+
+echo "ipv4-network = ${POOL}" | tee -a $CONFIG_FILE >/dev/null
+echo "restrict-user-to-routes = true" | tee -a $CONFIG_FILE >/dev/null
+for val in ${ROUTES//,/ }
 do
-   echo $val
+   echo "route = ${val}" | tee -a $CONFIG_FILE >/dev/null
+done
+for val in ${IROUTES//,/ }
+do
+   echo "iroute = ${val}" | tee -a $CONFIG_FILE >/dev/null
 done
 
 graceful_exit
