@@ -11,6 +11,11 @@ echo $output
 logG() { while read data; do echo "G:$data";                    done; }
 
 echo "hi" | logG
+
+# └──> bash functionParam.sh
+# G:hi
+
+echo "2" | foo
 #foo
 #foo "alo"
 

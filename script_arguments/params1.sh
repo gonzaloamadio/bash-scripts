@@ -10,7 +10,7 @@
 #In productive scripts, this is usually what you want because it allows you to handle errors yourself without being disturbed by annoying messages. 
 
 #Si no le ponemos los 1eros :, y ejecutamos -a sin argumento nos imprime ademas de nuestro error:
-# ./params4.sh: la opción requiere un argumento -- s
+# ./params1.sh: la opción requiere un argumento -- s
 while getopts ":a:" opt; do
   case $opt in
     a)

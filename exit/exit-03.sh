@@ -1,8 +1,9 @@
 #!/bin/bash
 
 VAR=`. exit-01.sh 1`
-echo "Out of exe of script of echo"
+echo "VAR"
 echo $VAR
+echo "------------------"
 
 echo
 
@@ -27,24 +28,16 @@ else
     echo "IF NO OK"
 fi
 
-#cat exit-01.sh
-#!/bin/bash
 
-#if [ $1 -eq 0 ]
-#then
-#    echo "exit 0"
-#    exit 0
-#else 
-#    echo "exit 1"
-#    exit 1
-#fi
+# VAR
+# exit 1
+# ------------------
 
-#$ ./exit-03.sh 
-# Out of exe of script of echo
-#exit 1
-#### CODE 1
-#exit 1
-#1
-#### CODE 0
-#0
+### CODE 1
+# 1
+### CODE 0
+# 0
 
+# DIRECTLY WITH IF
+# Yes, executed
+# IF OK
