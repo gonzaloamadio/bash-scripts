@@ -136,12 +136,11 @@ if [ -z "${POOL}" ] || [ -z "${ROUTES}" ] || [ -z "${USERNAME}"  ]; then
     exit $FAILURE
 fi
 
-# TODO: check chown
-# FOLDER="/etc/ocserv/config-per-user"
 FOLDER="/tmp"
 mkdir -p $FOLDER
 CONFIG_FILE="${FOLDER}/${USERNAME}"
 touch $CONFIG_FILE
+echo "" > $CONFIG_FILE
 
 echo "ipv4-network = ${POOL}" | tee -a $CONFIG_FILE >/dev/null
 echo "restrict-user-to-routes = true" | tee -a $CONFIG_FILE >/dev/null

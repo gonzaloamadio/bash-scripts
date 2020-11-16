@@ -21,7 +21,7 @@ if [ $dif -gt 0 ]; then
 	# If errors,  send mail and save in log
 	if [ $err_count -gt 0 ]; then
 		err=$(tail -n $dif $new | grep "ORA-")
-		echo $err | mail -v -s "Revisar alert_UAACLDB.log 10.85.1.71" -S smtp=10.85.1.104 -S from="alertas@itecnis.com(oracle - uaa)"   alertas@itecnis.com	
+		echo $err | mail -v -s "Revisar logname.log 10.85.1.71" -S smtp=10.85.1.104 -S from="somemail@website.com(oracle - yourbusiness)"   somemail@website.com
 		echo $err >> /path/to/log/log.txt
 	fi
 	# Make this last log, be the "old" or original, so in next iteration the process works ok

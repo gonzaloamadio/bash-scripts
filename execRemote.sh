@@ -25,3 +25,26 @@
 # sync
 # sudo /sbin/shutdown -h 0
 #EOF
+
+# ref: https://zaiste.net/posts/few-ways-to-execute-commands-remotely-ssh/
+
+# S permission: https://www.toolbox.com/tech/programming/question/ssh-running-script-on-remote-machine-with-root-privileges-032612/
+
+
+##### RUN SCRIPT THAT NEEDS ROOT
+# In machine that needs to be run
+
+# Give the user "username" permission to execute that script and route command as sudo.
+# If inside the script you executo only route command as sudo, only second line would be necessary
+cat /etc/sudoers
+replace_this_with_user_username ALL=(root)NOPASSWD:/home/username/route.sh
+replace_this_with_user_username ALL=(root)NOPASSWD:/sbin/route
+
+cat /home/username/routes.sh
+sudo ip route add 192.168.0.0/16 via 172.31.82.131
+sudo ip route add 172.31.239.0/29 via 172.31.82.131
+
+Then if you have ssh key in place. Just use one of the above methors:
+
+    ssh usr@remote_host 'bash /home/user/route.sh' # this one should work
+    ssh usr@remote_host 'sudo nohup bash -c "/home/user/route.sh > /dev/null 2>&1 &"'
