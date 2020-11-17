@@ -60,3 +60,5 @@ exit
 EOF
 
 
+############ If we have python... check this: 
+http://www.fabfile.org/
