@@ -20,4 +20,14 @@ fi
 [ -f /etc/hostssss ]  || echo "Not found"
 #Not found
 
+if "0";then
+    echo "if cero con comillas"
+else
+    echo "else cero con comillas"
+fi
 
+if 0;then
+    echo "if cero sin comillas"
+else
+    echo "else cero sin comillas"
+fi

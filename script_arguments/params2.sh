@@ -3,6 +3,9 @@
 #http://wiki.bash-hackers.org/howto/getopts_tutorial
 #http://stackoverflow.com/questions/16483119/example-of-how-to-use-getopts-in-bash
 
+SUCCESS=0
+FAILURE=1
+
 TODAY=`date +%Y%m%d`
 
 # Usage function.
